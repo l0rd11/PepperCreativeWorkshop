@@ -1,29 +1,27 @@
-
-#Pepper Creative Workshop (PCW)
-##It is Repository for Pepper workshop with children
-
+# Pepper Creative Workshop (PCW)
+## It is Repository for Pepper workshop with children
 
 
 ### MQTT Topicks
 #### Broker addres
-```python
+```
 192.168.1.101
 ```
 #### Speak in polish
-```python
+```
 pepper/textToSpeech
 ```
 #### camera topic
-```python
+```
 pepper/video
 ```
 ##### start recording msg
-```python
+```
 "start_recording" + " " + file_name
 ```
 file_name is string with name of result file without extension 
 ##### stop recording msg
-```python
+```
 "stop_recording" + " "
 ```
 
@@ -65,7 +63,7 @@ class MyClass(GeneratedClass):
         self.onStopped() #activate the output of the box
 ```
 
-####Starting previously installed choreography activity 
+#### Starting previously installed choreography activity 
 
 documentation http://doc.aldebaran.com/2-5/naoqi/core/albehaviormanager.html
 
