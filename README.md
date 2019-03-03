@@ -25,6 +25,24 @@ file_name is string with name of result file without extension
 "stop_recording" + " "
 ```
 
+#### Start/stop recording using robot camera
+documentation http://doc.aldebaran.com/2-5/naoqi/vision/alvideorecorder.html
+```python
+videoRecorderProxy = sesion.service("ALVideoRecorder")
+
+videoRecorderProxy.setFrameRate(10.0)
+videoRecorderProxy.setResolution(2) # Set resolution to VGA (640 x 480)
+# We'll save a 5 second video record in /home/nao/recordings/cameras/
+videoRecorderProxy.startRecording("/home/nao/recordings/cameras", "test")
+print "Video record started."
+
+time.sleep(5)
+
+videoInfo = videoRecorderProxy.stopRecording()
+print "Video was saved on the robot: ", videoInfo[1]
+print "Total number of frames: ", videoInfo[0]
+```
+
 #### Sending message to mqtt broker
 ```python
 import paho.mqtt.publish as publish
