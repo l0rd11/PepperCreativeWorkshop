@@ -2,7 +2,7 @@
 "exec" "`dirname $0`/venv/bin/ipython3" "-i" "$0" "$@"
 # shebang for virtualenv execution from any location
 # credit: stackoverflow.com/questions/20095351
-
+import datetime
 import logging
 import random
 
@@ -112,6 +112,31 @@ def publish_to_topic(topic):
     publish.single(topic, hostname=NAO_IP)
 
 
+def video_begin(_):
+    """
+    Begin recording a video using robot camera.
+
+    Uses topic 'pepper/video'.
+
+    """
+    timestamp = datetime.datetime.now().isoformat()
+    publish.single('pepper/video',
+                   "start_recording video-{}".format(timestamp),
+                   hostname=NAO_IP)
+
+
+def video_end(_):
+    """
+    End recording a video using robot camera.
+
+    Uses topic 'pepper/video'.
+
+    """
+    publish.single('pepper/video',
+                   "stop_recording",
+                   hostname=NAO_IP)
+
+
 def quit_(_):
     """
     Quit whole program.
@@ -131,6 +156,8 @@ aliases = {
     's': say,
     'ss': say_saved,
     'p': publish_to_topic,
+    'vb': video_begin,
+    've': video_end,
     'q': quit_,
     'h': print_help,
 }

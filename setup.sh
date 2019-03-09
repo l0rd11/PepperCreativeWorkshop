@@ -20,10 +20,3 @@ pip install -r ${PROJECT_PATH}/requirements.txt
 chmod u+x ${PROJECT_PATH}/controller.py
 
 echo 'Installed successfully'
-
-
-######################
-#ssh nao@192.168.1.101
-#cd mqtt
-#qicli call ALTabletService._openSettings
-#./startMqttBroker.sh &
