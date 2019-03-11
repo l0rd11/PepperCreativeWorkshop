@@ -7,3 +7,5 @@
 *.pyc
 ### results ###
 results/
+
+venv/*

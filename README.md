@@ -1,6 +1,25 @@
 # Pepper Creative Workshop (PCW)
 ## It is Repository for Pepper workshop with children
 
+### Using controller
+#### Installation
+```
+git clone https://github.com/l0rd11/PepperCreativeWorkshop.git
+cd PepperCreativeWorkshop
+./setup.sh
+``` 
+#### Running
+Start MQTT broker on Pepper:
+```
+ssh nao@192.168.1.101
+cd mqtt
+qicli call ALTabletService._openSettings
+./startMqttBroker.sh &
+```
+Run controller:
+```
+./controller.py
+```
 
 ### MQTT Topicks
 #### Broker addres
