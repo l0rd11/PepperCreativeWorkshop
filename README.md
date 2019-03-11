@@ -6,7 +6,7 @@
 ```
 git clone https://github.com/l0rd11/PepperCreativeWorkshop.git
 cd PepperCreativeWorkshop
-bash -e setup.sh
+./setup.sh
 ``` 
 #### Running
 Start MQTT broker on Pepper:
