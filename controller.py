@@ -1,5 +1,5 @@
 #!/bin/sh
-"exec" "`dirname $0`/venv/bin/ipython3" "-i" "$0" "$@"
+"exec" "`dirname $0`/venv/bin/ipython" "-i" "$0" "$@"
 # shebang for virtualenv execution from any location
 # credit: stackoverflow.com/questions/20095351
 import datetime
@@ -40,7 +40,7 @@ def exc_handler(self, etype, value, tb, tb_offset=None):
     # run
     func = aliases[cmd]
     if message == '?':
-        print(f'Alias for function "{func.__name__}".')
+        print('Alias for function "{}".'.format(func.__name__))
         print(func.__doc__)
     else:
         func(message)
@@ -86,10 +86,10 @@ def say_saved(expression):
     try:
         message = eval(expression)
     except NameError:
-        logger.warning(f'There is no "{expression}" defined')
+        logger.warning('There is no "{}" defined'.format(expression))
         return
     except Exception as exc:
-        logger.warning(f'Couldn\'t evaluate "{expression}": {exc}')
+        logger.warning('Couldn\'t evaluate "{}": {}'.format(expression, exc))
         return
 
     if type(message) == str:
@@ -97,8 +97,8 @@ def say_saved(expression):
     elif type(message) == list:
         say(random.choice(message))
     else:
-        logger.warning(f'"{expression}" is a {type(message)}, '
-                       f'and it should be a string or a list')
+        logger.warning('"{}" is a {}, and it should be a string or a list'
+                       .format(expression, type(message)))
 
 
 def publish_to_topic(topic):
@@ -148,7 +148,7 @@ def print_help(_):
     print('\nalias \tfunction')
     print('--------------------')
     for key, value in aliases.items():
-        print(f'{key} \t{value.__name__}')
+        print('{} \t{}'.format(key, value.__name__))
     print('\nfor more info about some alias, type "<alias> ?"')
 
 

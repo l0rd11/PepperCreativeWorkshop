@@ -9,12 +9,12 @@ case ${uname_out} in
                 exit 1
 esac
 
-${installer} python3.6
-${installer} python3.6-venv
+${installer} python2.7
+python2.7 -m pip install virtualenv
 
 # set up virtualenv
 PROJECT_PATH=$(dirname $0)
-python3.6 -m venv ${PROJECT_PATH}/venv
+python2.7 -m virtualenv ${PROJECT_PATH}/venv
 source ${PROJECT_PATH}/venv/bin/activate
 pip install -r ${PROJECT_PATH}/requirements.txt
 chmod u+x ${PROJECT_PATH}/controller.py

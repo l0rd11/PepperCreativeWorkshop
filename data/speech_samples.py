@@ -1,3 +1,5 @@
+# -*- coding: utf-8 -*-
+
 """
 Predefined texts that can later be said by pepper.
 Feel free to add any new texts.
