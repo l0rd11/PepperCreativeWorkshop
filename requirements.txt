@@ -11,6 +11,7 @@ prompt-toolkit==1.0.15
 ptyprocess==0.6.0
 pyfiglet==0.8.post1
 Pygments==2.3.1
+qi==1.6.7
 scandir==1.10.0
 simplegeneric==0.8.1
 six==1.12.0
