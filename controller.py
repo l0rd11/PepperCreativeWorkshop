@@ -5,6 +5,9 @@
 import datetime
 import logging
 import random
+import qi
+import time
+import socket
 
 import paho.mqtt.publish as publish
 from IPython import get_ipython
@@ -12,8 +15,37 @@ from pyfiglet import figlet_format
 
 from data.speech_samples import *
 
+
+
+
+
 logger = logging.getLogger('pepperer')
 NAO_IP = '192.168.1.101'
+NAO_PORT = 9559
+
+
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
+
+
+LOCAL_IP = get_ip()
+RESOURCES_SERVER = "http://" + LOCAL_IP + ":8000/"
+
+session = qi.Session()
+session.connect("tcp://" + NAO_IP + ":" + str(NAO_PORT))
+tabletService = session.service("ALTabletService")
+behavior_mng_service = session.service("ALBehaviorManager")
+
 
 
 def exc_handler(self, etype, value, tb, tb_offset=None):
@@ -152,6 +184,50 @@ def print_help(_):
     print('\nfor more info about some alias, type "<alias> ?"')
 
 
+def show_image(image_name):
+    tabletService.preLoadImage(RESOURCES_SERVER + image_name)
+    tabletService.showImage(RESOURCES_SERVER + image_name)
+
+
+def play_video(video_name):
+    tabletService.playVideo(RESOURCES_SERVER + video_name)
+
+
+
+def start_behavior(behavior_name):
+    if (behavior_mng_service.isBehaviorInstalled(behavior_name)):
+        # Check that it is not already running.
+        if (not behavior_mng_service.isBehaviorRunning(behavior_name)):
+            # Launch behavior. This is a blocking call, use _async=True if you do not
+            # want to wait for the behavior to finish.
+            behavior_mng_service.runBehavior(behavior_name, _async=True)
+            time.sleep(0.5)
+        else:
+            print "Behavior is already running."
+
+    else:
+        print "Behavior not found."
+        return
+
+
+def stop_behavior(behavior_name):
+    if (behavior_mng_service.isBehaviorRunning(behavior_name)):
+        behavior_mng_service.stopBehavior(behavior_name)
+        time.sleep(1.0)
+    else:
+        print "Behavior is already stopped."
+
+
+def get_Behaviors(_):
+    names = behavior_mng_service.getInstalledBehaviors()
+    print "Behaviors on the robot:"
+    print names
+
+    names = behavior_mng_service.getRunningBehaviors()
+    print "Running behaviors:"
+    print names
+
+
 aliases = {
     's': say,
     'ss': say_saved,
@@ -159,6 +235,11 @@ aliases = {
     'vb': video_begin,
     've': video_end,
     'q': quit_,
+    'si': show_image,
+    'pv': play_video,
+    'start_b': start_behavior,
+    'stop_b': stop_behavior,
+    'get_b': get_Behaviors,
     'h': print_help,
 }
 

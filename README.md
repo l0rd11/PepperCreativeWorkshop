@@ -1,6 +1,12 @@
 # Pepper Creative Workshop (PCW)
 ## It is Repository for Pepper workshop with children
 
+# To use show image or play video(currently not working)
+server http need to be started locally on port 8000 in folder with images eg:
+ ```
+python -m SimpleHTTPServer 8000
+```
+
 ### Using controller
 #### Installation
 ```
