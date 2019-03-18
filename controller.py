@@ -173,6 +173,22 @@ def play_video(video_name):
     tabletService.playVideo(RESOURCES_SERVER + video_name)
 
 
+def grep_installed_behaviors(behavior_name):
+    if behavior_name is None:
+        behavior_name = ''
+    for beh in behavior_mng_service.getInstalledBehaviors():
+        if behavior_name in beh:
+            print beh
+
+
+def grep_running_behaviors(behavior_name):
+    if behavior_name is None:
+        behavior_name = ''
+    for beh in behavior_mng_service.getRunningBehaviors():
+        if behavior_name in beh:
+            print beh
+
+
 def quit_(_):
     """
     Quit whole program.
@@ -181,18 +197,20 @@ def quit_(_):
 
 
 def print_help(_):
-    print('''\nalias    function''')
-    print('--------------------')
-    for key, value in aliases.items():
-        print('{:8} {}'.format(key, value.__name__))
     print(textwrap.dedent('''
-    for more info about some alias, type "<alias> ?"
-    
     to create your own alias type:
     aliases['cmd'] = your_function
     after that typing:
     cmd message   <=>   your_function('message')
     cmd           <=>   your_function(None)
+    
+    alias    function
+    --------------------'''))
+    for key, value in aliases.items():
+        print('{:8} {}'.format(key, value.__name__))
+
+    print(textwrap.dedent('''
+    for more info about some alias, type "<alias> ?"
     '''))
 
 
@@ -216,6 +234,8 @@ aliases = OrderedDict([
     ('vb', video_begin),
     ('ve', video_end),
     ('g', get_behaviors),
+    ('gi', grep_installed_behaviors),
+    ('gr', grep_running_behaviors),
     ('l', launch_behavior),
     ('k', kill_behavior),
     ('si', show_image),
