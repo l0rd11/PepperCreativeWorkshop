@@ -9,6 +9,7 @@ import sys
 import textwrap
 import time
 from collections import OrderedDict
+import socket
 
 import paho.mqtt.publish as publish
 import qi
@@ -163,6 +164,15 @@ def kill_behavior(behavior_name):
         print "Behavior is already stopped."
 
 
+def show_image(image_name):
+    tabletService.preLoadImage(RESOURCES_SERVER + image_name)
+    tabletService.showImage(RESOURCES_SERVER + image_name)
+
+
+def play_video(video_name):
+    tabletService.playVideo(RESOURCES_SERVER + video_name)
+
+
 def quit_(_):
     """
     Quit whole program.
@@ -186,6 +196,19 @@ def print_help(_):
     '''))
 
 
+def get_ip():
+    s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    try:
+        # doesn't even have to be reachable
+        s.connect(('10.255.255.255', 1))
+        IP = s.getsockname()[0]
+    except:
+        IP = '127.0.0.1'
+    finally:
+        s.close()
+    return IP
+
+
 aliases = OrderedDict([
     ('s', say),
     ('ss', say_saved),
@@ -195,6 +218,8 @@ aliases = OrderedDict([
     ('g', get_behaviors),
     ('l', launch_behavior),
     ('k', kill_behavior),
+    ('si', show_image),
+    ('pv', play_video),
     ('q', quit_),
     ('h', print_help),
 ])
@@ -230,18 +255,22 @@ def exc_handler(self, etype, value, tb, tb_offset=None):
         func(message)
 
 
-get_ipython().set_custom_exc((SyntaxError, NameError), exc_handler)
+if __name__ == '__main__':
+    get_ipython().set_custom_exc((SyntaxError, NameError), exc_handler)
 
+    LOCAL_IP = get_ip()
+    RESOURCES_SERVER = "http://" + LOCAL_IP + ":8000/"
 
-session = qi.Session()
-try:
-    session.connect("tcp://{}:{}".format(NAO_IP, NAO_PORT))
-except RuntimeError:
-    print ("Can't connect to Naoqi at ip \"" + NAO_IP + "\" on port " + str(NAO_PORT) +".\n"
-           "Please check your script arguments. Run with -h option for help.")
-    sys.exit(1)
-behavior_mng_service = session.service("ALBehaviorManager")
+    session = qi.Session()
+    try:
+        session.connect("tcp://{}:{}".format(NAO_IP, NAO_PORT))
+    except RuntimeError:
+        print("Can't connect to Naoqi at ip \"" + NAO_IP + "\" on port " + str(NAO_PORT) + ".\n"
+              "Please check your script arguments. Run with -h option for help.")
+        sys.exit(1)
 
+    tabletService = session.service("ALTabletService")
+    behavior_mng_service = session.service("ALBehaviorManager")
 
-print(figlet_format('Pepperer', font='graffiti'))
-print('\nfor help type h')
+    print(figlet_format('Pepperer', font='graffiti'))
+    print('\nfor help type h')
