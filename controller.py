@@ -112,6 +112,22 @@ def video_end(_):
                    hostname=NAO_IP)
 
 
+def head_camera_start(_):
+
+    videoRecorderProxy.setFrameRate(10.0)
+    videoRecorderProxy.setResolution(2)  # Set resolution to VGA (640 x 480)
+    # We'll save a 5 second video record in /home/nao/recordings/cameras/
+    timestamp = datetime.datetime.now().isoformat()
+    videoRecorderProxy.startRecording("/home/nao/video", timestamp)
+    print "Video record started."
+
+
+def head_camera_stop(_):
+    videoInfo = videoRecorderProxy.stopRecording()
+    print "Video was saved on the robot: ", videoInfo[1]
+    print "Total number of frames: ", videoInfo[0]
+
+
 def get_behaviors(_):
     """
     Know which behaviors are on the robot.
@@ -291,6 +307,7 @@ if __name__ == '__main__':
 
     tabletService = session.service("ALTabletService")
     behavior_mng_service = session.service("ALBehaviorManager")
+    videoRecorderProxy = session.service("ALVideoRecorder")
 
     print(figlet_format('Pepperer', font='graffiti'))
     print('\nfor help type h')

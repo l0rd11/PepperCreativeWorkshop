@@ -26,3 +26,11 @@ yay = [
 ]
 
 error = 'pi pi pi'
+
+
+draw_intro = "chciałbym zrobić z wami jeszcze jedną rzecz. słyszałem, że pięknie rysujecie. czy narysowalibyście coś dla mnie."
+
+draw_intro2 = "super. zaraz moi pomocnicy rozdadzą wam kartki i kredki. bardzo chciałbym, żebyście narysowali coś, co jest w" \
+    " tym pokoju. to może być cokolwiek, śmiało. nie mogę się doczekać, żeby zobaczyć co narysujecie."
+
+draw_end = "bardzo dziękuję. pokażcie mi co narysowaliście."
