@@ -15,6 +15,7 @@ import paho.mqtt.publish as publish
 import qi
 from IPython import get_ipython
 from pyfiglet import figlet_format
+import paramiko
 
 from data.speech_samples import *
 
@@ -22,6 +23,16 @@ from data.speech_samples import *
 logger = logging.getLogger('pepperer')
 NAO_IP = '192.168.1.101'
 NAO_PORT = 9559
+
+def lunch_tablet_settings(password):
+    p = paramiko.SSHClient()
+    p.set_missing_host_key_policy(
+        paramiko.AutoAddPolicy())  # This script doesn't work for me unless this line is added!
+    p.connect(NAO_IP, port=22, username="nao", password=password)
+    stdin, stdout, stderr = p.exec_command("qicli call ALTabletService._openSettings")
+    opt = stdout.readlines()
+    opt = "".join(opt)
+    print(opt)
 
 
 def say(message):
@@ -229,6 +240,17 @@ def print_help(_):
     for more info about some alias, type "<alias> ?"
     '''))
 
+def move_forward():
+    posture_service.goToPosture("StandInit", 0.5)
+    motion_service.moveTo(0.3, 0.0, 0.0, 5.0)
+
+def move_back():
+    posture_service.goToPosture("StandInit", 0.5)
+    motion_service.moveTo(-0.3, 0.0, 0.0, 5.0)
+
+def turn_around():
+    posture_service.goToPosture("StandInit", 0.5)
+    motion_service.moveTo(0.0, 0.0, 3.1415, 5.0)
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -242,6 +264,14 @@ def get_ip():
         s.close()
     return IP
 
+def play_animation(gesture = "animations/Stand/Gestures/Hey_3"):
+    animation_player_service.run(gesture, _async=True)
+
+def say_with_animation(message):
+    gesture = message.split(' ')[-1]
+    message = ' '.join(message.split(' ')[0:-1])
+    publish.single('pepper/textToSpeech', message, hostname=NAO_IP)
+    play_animation(gesture)
 
 aliases = OrderedDict([
     ('s', say),
@@ -258,7 +288,15 @@ aliases = OrderedDict([
     ('pv', play_video),
     ('q', quit_),
     ('h', print_help),
+    ('lts', lunch_tablet_settings),
+    ('mf', move_forward),
+    ('mb', move_back),
+    ('tu', turn_around),
+    ('pa', play_animation),
+    ('swa', say_with_animation),
 ])
+
+
 
 
 def exc_handler(self, etype, value, tb, tb_offset=None):
@@ -291,6 +329,7 @@ def exc_handler(self, etype, value, tb, tb_offset=None):
         func(message)
 
 
+
 if __name__ == '__main__':
     get_ipython().set_custom_exc((SyntaxError, NameError), exc_handler)
 
@@ -308,6 +347,9 @@ if __name__ == '__main__':
     tabletService = session.service("ALTabletService")
     behavior_mng_service = session.service("ALBehaviorManager")
     videoRecorderProxy = session.service("ALVideoRecorder")
+    motion_service = session.service("ALMotion")
+    posture_service = session.service("ALRobotPosture")
+    animation_player_service = session.service("ALAnimationPlayer")
 
     print(figlet_format('Pepperer', font='graffiti'))
     print('\nfor help type h')
