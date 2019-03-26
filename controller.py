@@ -11,6 +11,7 @@ import time
 from collections import OrderedDict
 import socket
 
+import math
 import paho.mqtt.publish as publish
 import qi
 from IPython import get_ipython
@@ -240,17 +241,26 @@ def print_help(_):
     for more info about some alias, type "<alias> ?"
     '''))
 
-def move_forward():
+def move_forward(_):
     posture_service.goToPosture("StandInit", 0.5)
     motion_service.moveTo(0.3, 0.0, 0.0, 5.0)
 
-def move_back():
+def move_back(_):
     posture_service.goToPosture("StandInit", 0.5)
     motion_service.moveTo(-0.3, 0.0, 0.0, 5.0)
 
-def turn_around():
+def move(dist=0.3):
     posture_service.goToPosture("StandInit", 0.5)
-    motion_service.moveTo(0.0, 0.0, 3.1415, 5.0)
+    dist = float(dist)
+    time = dist * 10.0
+    motion_service.moveTo(dist, 0.0, 0.0, time)
+
+def turn_around(rounds=0.5):
+    posture_service.goToPosture("StandInit", 0.5)
+    rounds = float(rounds)
+    turns = rounds  * 2.0 * math.pi
+    time = rounds * 8.0
+    motion_service.moveTo(0.0, 0.0, turns, time)
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -265,13 +275,18 @@ def get_ip():
     return IP
 
 def play_animation(gesture = "animations/Stand/Gestures/Hey_3"):
-    animation_player_service.run(gesture, _async=True)
+    future = _play_animation(gesture)
+    future.value()
+
+def _play_animation(gesture = "animations/Stand/Gestures/Hey_3"):
+    return animation_player_service.run(gesture, _async=True)
 
 def say_with_animation(message):
     gesture = message.split(' ')[-1]
     message = ' '.join(message.split(' ')[0:-1])
+    future = _play_animation(gesture)
     publish.single('pepper/textToSpeech', message, hostname=NAO_IP)
-    play_animation(gesture)
+    future.value()
 
 aliases = OrderedDict([
     ('s', say),
@@ -291,6 +306,7 @@ aliases = OrderedDict([
     ('lts', lunch_tablet_settings),
     ('mf', move_forward),
     ('mb', move_back),
+    ('m', move),
     ('tu', turn_around),
     ('pa', play_animation),
     ('swa', say_with_animation),
