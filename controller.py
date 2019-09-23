@@ -4,26 +4,28 @@
 # credit: stackoverflow.com/questions/20095351
 import datetime
 import logging
+import math
 import random
+import socket
 import sys
 import textwrap
 import time
 from collections import OrderedDict
-import socket
 
-import math
 import paho.mqtt.publish as publish
 import qi
+from autocorrect import Speller
 from IPython import get_ipython
 from pyfiglet import figlet_format
+
 import paramiko
-
 from data.speech_samples import *
-
 
 logger = logging.getLogger('pepperer')
 NAO_IP = '192.168.1.101'
 NAO_PORT = 9559
+autocorrector = None
+
 
 def lunch_tablet_settings(password):
     p = paramiko.SSHClient()
@@ -46,6 +48,8 @@ def say(message):
         s how are you doing?
 
     """
+    if autocorrector is not None:
+        message = autocorrector(message)
     publish.single('pepper/textToSpeech', message, hostname=NAO_IP)
 
 
@@ -348,6 +352,13 @@ def exc_handler(self, etype, value, tb, tb_offset=None):
 
 if __name__ == '__main__':
     get_ipython().set_custom_exc((SyntaxError, NameError), exc_handler)
+
+    # set polish autocorrection
+    # to make correction more sensitive to unusual words (more words will get corrected),
+    # make threshold greter e.g. 15
+    # for english set lang='en'
+    # to turn off, type: autocorrector = None
+    autocorrector = Speller(threshold=2, lang='pl')
 
     LOCAL_IP = get_ip()
     RESOURCES_SERVER = "http://" + LOCAL_IP + ":8000/"
