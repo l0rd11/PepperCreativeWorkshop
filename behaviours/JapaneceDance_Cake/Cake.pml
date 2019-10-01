@@ -13,7 +13,7 @@
     </Resources>
     <Topics />
     <IgnoredPaths>
-        <Path src=".metadata" />
+        <Path src="translations/hoge.txt" />
     </IgnoredPaths>
     <Translations auto-fill="en_US">
         <Translation name="translation_en_US" src="translations/translation_en_US.ts" language="en_US" />

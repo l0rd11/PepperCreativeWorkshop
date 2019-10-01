@@ -22,7 +22,7 @@ from data.speech_samples import *
 
 
 logger = logging.getLogger('pepperer')
-NAO_IP = '192.168.1.101'
+NAO_IP = '192.168.1.102'
 NAO_PORT = 9559
 
 def lunch_tablet_settings(password):
@@ -262,6 +262,13 @@ def turn_around(rounds=0.5):
     time = rounds * 8.0
     motion_service.moveTo(0.0, 0.0, turns, time)
 
+def turn_around_right(rounds=0.5):
+    posture_service.goToPosture("StandInit", 0.5)
+    rounds = float(rounds)
+    turns = rounds * 2.0 * math.pi
+    time = rounds * 8.0
+    motion_service.moveTo(0.0, 0.0, -turns, time)
+
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -288,8 +295,30 @@ def say_with_animation(message):
     publish.single('pepper/textToSpeech', message, hostname=NAO_IP)
     future.value()
 
+
+def play_rock_paper_scissors(args):
+    launch_behavior("rockpaperscissors/behavior_1")
+
+
+def play_win(args):
+    launch_behavior("win/behavior_1")
+
+
+def play_lost(args):
+    launch_behavior("lost/behavior_1")
+
+
+def play_draw(args):
+    launch_behavior("draw/behavior_1")
+
+
+def say_native(message):
+    speech_service.say(message)
+
+
 aliases = OrderedDict([
     ('s', say),
+    ("sn", say_native),
     ('ss', say_saved),
     ('p', publish_to_topic),
     ('vb', video_begin),
@@ -308,8 +337,13 @@ aliases = OrderedDict([
     ('mb', move_back),
     ('m', move),
     ('tu', turn_around),
+    ('tur', turn_around_right),
     ('pa', play_animation),
     ('swa', say_with_animation),
+    ("prps", play_rock_paper_scissors),
+    ("win", play_win),
+    ("lost", play_lost),
+    ("draw", play_draw)
 ])
 
 
@@ -323,12 +357,14 @@ def exc_handler(self, etype, value, tb, tb_offset=None):
     be interpreted as some alias.
     """
     # parse
+    print etype
     if etype == SyntaxError:
         cmd, message = value.text.split(' ', 1)
         message = message.strip()
     else:
         # etype == NameError
         cmd = str(value)[6:-16]
+        print value
         # because str(value) has form: "name '...' is not defined"
         message = None
 
@@ -342,6 +378,7 @@ def exc_handler(self, etype, value, tb, tb_offset=None):
         print('Alias for function "{}".'.format(func.__name__))
         print(textwrap.dedent(func.__doc__))
     else:
+        print message
         func(message)
 
 
@@ -366,6 +403,7 @@ if __name__ == '__main__':
     motion_service = session.service("ALMotion")
     posture_service = session.service("ALRobotPosture")
     animation_player_service = session.service("ALAnimationPlayer")
+    speech_service = session.service("ALTextToSpeech")
 
     print(figlet_format('Pepperer', font='graffiti'))
     print('\nfor help type h')
