@@ -5,7 +5,9 @@
         <BehaviorDescription name="behavior" src="behavior_1" xar="behavior.xar" />
     </BehaviorDescriptions>
     <Dialogs />
-    <Resources />
+    <Resources>
+        <File name="macarena" src="html/macarena.wav" />
+    </Resources>
     <Topics />
     <IgnoredPaths />
     <Translations auto-fill="en_US">
